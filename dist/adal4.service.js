@@ -200,6 +200,28 @@ var Adal4Service = (function () {
         }
     };
     /**
+     * @param {string} resource
+     * @param {string} extraQueryParams - Extra query params to pass to the oauth authorize url
+     * @param {string} claims - Claims to submit to the oauth authorize url
+     * @returns
+     */
+    Adal4Service.prototype.acquireTokenRedirect = function (resource, extraQueryParams, claims) {
+        if (extraQueryParams === void 0) { extraQueryParams = undefined; }
+        if (claims === void 0) { claims = undefined; }
+        return this.adalContext.acquireTokenRedirect(resource, extraQueryParams, claims);
+    };
+    /**
+     * @param {string} resource
+     * @param {string} extraQueryParams - Extra query params to pass to the oauth authorize url
+     * @param {string} claims - Claims to submit to the oauth authorize url
+     * @returns
+     */
+    Adal4Service.prototype.acquireTokenPopup = function (resource, extraQueryParams, claims, callback) {
+        if (extraQueryParams === void 0) { extraQueryParams = undefined; }
+        if (claims === void 0) { claims = undefined; }
+        return this.adalContext.acquireTokenRedirect(resource, extraQueryParams, claims);
+    };
+    /**
      *
      *
      * @returns {Observable<adal.User>}

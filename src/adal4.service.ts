@@ -221,6 +221,26 @@ export class Adal4Service {
   }
 
   /**
+   * @param {string} resource
+   * @param {string} extraQueryParams - Extra query params to pass to the oauth authorize url
+   * @param {string} claims - Claims to submit to the oauth authorize url
+   * @returns
+   */
+  public acquireTokenRedirect(resource: string, extraQueryParams: string = undefined, claims: string = undefined) {
+    return this.adalContext.acquireTokenRedirect(resource, extraQueryParams, claims);
+  }
+
+  /**
+   * @param {string} resource
+   * @param {string} extraQueryParams - Extra query params to pass to the oauth authorize url
+   * @param {string} claims - Claims to submit to the oauth authorize url
+   * @returns
+   */
+  public acquireTokenPopup(resource: string, extraQueryParams: string = undefined, claims: string = undefined, callback: any) {
+    return this.adalContext.acquireTokenRedirect(resource, extraQueryParams, claims);
+  }
+
+  /**
    *
    *
    * @returns {Observable<adal.User>}

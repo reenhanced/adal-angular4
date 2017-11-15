@@ -102,6 +102,20 @@ export declare class Adal4Service {
      */
     acquireToken(resource: string): Observable<string>;
     /**
+     * @param {string} resource
+     * @param {string} extraQueryParams - Extra query params to pass to the oauth authorize url
+     * @param {string} claims - Claims to submit to the oauth authorize url
+     * @returns
+     */
+    acquireTokenRedirect(resource: string, extraQueryParams?: string, claims?: string): any;
+    /**
+     * @param {string} resource
+     * @param {string} extraQueryParams - Extra query params to pass to the oauth authorize url
+     * @param {string} claims - Claims to submit to the oauth authorize url
+     * @returns
+     */
+    acquireTokenPopup(resource: string, extraQueryParams: string, claims: string, callback: any): any;
+    /**
      *
      *
      * @returns {Observable<adal.User>}
