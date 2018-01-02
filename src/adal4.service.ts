@@ -136,8 +136,7 @@ export class Adal4Service {
    *
    * @memberOf Adal4Service
    */
-  public handleWindowCallback(): void {
-    const hash = window.location.hash;
+  public handleWindowCallback(hash = window.location.hash): void {
     if (this.adalContext.isCallback(hash)) {
       const requestInfo = this.adalContext.getRequestInfo(hash);
       this.adalContext.saveTokenFromHash(requestInfo);
