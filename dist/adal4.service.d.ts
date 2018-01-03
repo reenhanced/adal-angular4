@@ -11,11 +11,10 @@ export declare class Adal4Service {
     /**
      *
      *
-     * @private
      * @type {adal.AuthenticationContext}
      * @memberOf Adal4Service
      */
-    private adalContext;
+    adalContext: adal.AuthenticationContext;
     /**
      *
      *
@@ -82,7 +81,7 @@ export declare class Adal4Service {
      *
      * @memberOf Adal4Service
      */
-    handleWindowCallback(): void;
+    handleWindowCallback(hash?: string): void;
     /**
      *
      *
@@ -112,6 +111,7 @@ export declare class Adal4Service {
      * @param {string} resource
      * @param {string} extraQueryParams - Extra query params to pass to the oauth authorize url
      * @param {string} claims - Claims to submit to the oauth authorize url
+     * @param {function} callback - (err, id_token) Returns the id token or error
      * @returns
      */
     acquireTokenPopup(resource: string, extraQueryParams: string, claims: string, callback: any): any;

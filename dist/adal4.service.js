@@ -124,8 +124,8 @@ var Adal4Service = (function () {
      *
      * @memberOf Adal4Service
      */
-    Adal4Service.prototype.handleWindowCallback = function () {
-        var hash = window.location.hash;
+    Adal4Service.prototype.handleWindowCallback = function (hash) {
+        if (hash === void 0) { hash = window.location.hash; }
         if (this.adalContext.isCallback(hash)) {
             var requestInfo = this.adalContext.getRequestInfo(hash);
             this.adalContext.saveTokenFromHash(requestInfo);
@@ -214,12 +214,13 @@ var Adal4Service = (function () {
      * @param {string} resource
      * @param {string} extraQueryParams - Extra query params to pass to the oauth authorize url
      * @param {string} claims - Claims to submit to the oauth authorize url
+     * @param {function} callback - (err, id_token) Returns the id token or error
      * @returns
      */
     Adal4Service.prototype.acquireTokenPopup = function (resource, extraQueryParams, claims, callback) {
         if (extraQueryParams === void 0) { extraQueryParams = undefined; }
         if (claims === void 0) { claims = undefined; }
-        return this.adalContext.acquireTokenRedirect(resource, extraQueryParams, claims);
+        return this.adalContext.acquireTokenPopup(resource, extraQueryParams, claims, callback);
     };
     /**
      *
