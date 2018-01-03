@@ -133,7 +133,9 @@ var Adal4Service = (function () {
                 this.updateDataFromCache(this.adalContext.config.loginResource);
             }
             else if (requestInfo.requestType === this.adalContext.REQUEST_TYPE.RENEW_TOKEN) {
-                this.adalContext.callback = window.parent.callBackMappedToRenewStates[requestInfo.stateResponse];
+                if (window.parent && window.parent.callBackMappedToRenewStates) {
+                    this.adalContext.callback = window.parent.callBackMappedToRenewStates[requestInfo.stateResponse];
+                }
             }
             if (requestInfo.stateMatch) {
                 if (typeof this.adalContext.callback === 'function') {
