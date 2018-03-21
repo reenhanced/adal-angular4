@@ -1,16 +1,50 @@
-var bump = require('gulp-bump'),
+var
+    bump = require('gulp-bump'),
     del = require('del'),
     exec = require('child_process').exec,
     gulp = require('gulp'),
-    merge = require('merge2'),
-    typescript = require('gulp-typescript'),
+    replace = require('gulp-replace'),
+    watch = require('gulp-watch'),
     fs = require('fs');
 
+// delete content of ./dist directory
 gulp.task('clean', function () {
-    del(['dist/*']);
+    del(['./dist/*', '!dist/index.js']);
 });
 
-gulp.task('bump', ['clean'], function () {
+// execute npm compile script
+gulp.task('compile', function (cb) {
+//gulp.task('compile', ['clean'], function (cb) {
+    exec('npm run compile', function (err, stdout, stderr) {
+        console.log(stdout);
+        console.log(stderr);
+        cb(err);
+    });
+});
+
+// include package.json file in ./dist folder
+gulp.task('package', ['compile'], function () {
+    const pkgjson = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
+    delete pkgjson.scripts;
+    delete pkgjson.devDependencies;
+    const filepath = './dist/package.json';
+    fs.writeFileSync(filepath, JSON.stringify(pkgjson, null, 2), 'utf-8');
+});
+
+// include type definition file for adal-angular
+gulp.task('copy', ['package'], function () {
+    gulp.src(['adal-angular.d.ts']).pipe(gulp.dest('./dist/'));
+})
+
+// rewrite type definition file path for adal-angular in adal.service.d.ts
+gulp.task('replace', ['copy'], function () {
+    gulp.src('./dist/adal.service.d.ts')
+    .pipe(replace('../adal-angular.d.ts', './adal-angular.d.ts'))
+    .pipe(gulp.dest('./dist/'))
+})
+
+// increase the version in package.json
+gulp.task('bump', ['replace'], function () {
     gulp.src('./package.json')
         .pipe(bump({
             type: 'patch'
@@ -18,53 +52,8 @@ gulp.task('bump', ['clean'], function () {
         .pipe(gulp.dest('./'));
 });
 
-gulp.task('bundle', ['bump'], function () {
-    var tsResult = gulp.src('src/*.ts')
-        .pipe(typescript({
-            module: "commonjs",
-            target: "es5",
-            noImplicitAny: true,
-            experimentalDecorators: true,
-            outDir: "dist/",
-            rootDir: "src/",
-            sourceMap: true,
-            declaration: true,
-            moduleResolution: "node",
-            removeComments: false,
-            lib: [
-                "es2015",
-                "dom"
-            ],
-            types: ["jasmine"]
-        }));
-
-    return merge([
-        tsResult.dts.pipe(gulp.dest('dist/')),
-        tsResult.js.pipe(gulp.dest('dist/'))
-    ]);
-});
-
-gulp.task('copy', ['bundle'], () => {
-
-    gulp.src(['src/adal-angular.d.ts', 'README.md', 'LICENSE'])
-        .pipe(gulp.dest('dist/'));
-});
-
-gulp.task('package', ['copy'], () => {
-
-    const pkgjson = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
-
-    delete pkgjson.scripts;
-
-    delete pkgjson.devDependencies;
-
-    const filepath = './dist/package.json';
-
-    fs.writeFileSync(filepath, JSON.stringify(pkgjson, null, 2), 'utf-8');
-
-});
-
-gulp.task('git-add', ['package'], function (cb) {
+// git add
+gulp.task('git-add', ['bump'], function (cb) {
     exec('git add -A', function (err, stdout, stderr) {
         console.log(stdout);
         console.log(stderr);
@@ -72,11 +61,9 @@ gulp.task('git-add', ['package'], function (cb) {
     });
 });
 
-
+// git commit
 gulp.task('git-commit', ['git-add'], function (cb) {
-
     var package = require('./package.json');
-
     exec('git commit -m "Version ' + package.version + ' release."', function (err, stdout, stderr) {
         console.log(stdout);
         console.log(stderr);
@@ -84,8 +71,8 @@ gulp.task('git-commit', ['git-add'], function (cb) {
     });
 });
 
+// git push
 gulp.task('git-push', ['git-commit'], function (cb) {
-
     exec('git push', function (err, stdout, stderr) {
         console.log(stdout);
         console.log(stderr);
@@ -93,11 +80,21 @@ gulp.task('git-push', ['git-commit'], function (cb) {
     });
 });
 
-gulp.task('publish', ['git-push'], function (cb) {
-
+// publish ./dist directory to npm
+gulp.task('publish', ['clean', 'git-push'], function (cb) {
     exec('npm publish ./dist', function (err, stdout, stderr) {
         console.log(stdout);
         console.log(stderr);
         cb(err);
+    });
+});
+
+// build ./dist folder
+gulp.task('default', ['replace'], function () {});
+
+// watch for changes and rebuild ./dist folder
+gulp.task('watch', ['default'], function (cb) {
+    return watch('*', function () {
+        gulp.start('default');
     });
 });

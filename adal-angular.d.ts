@@ -2,14 +2,14 @@
 // Typings needed for using ADAL with Angular 4
 declare module 'adal-angular' {
     export function inject(config: adal.Config): adal.AuthenticationContext;
+
+    export class adal{
+        
+    }
 }
 
 declare var AuthenticationContext: adal.AuthenticationContextStatic;
 declare var Logging: adal.Logging;
-
-declare module 'adal' {
-    export = { AuthenticationContext, Logging };
-}
 
 declare namespace adal {
 
@@ -44,8 +44,11 @@ declare namespace adal {
      * @interface User
      */
     interface User {
-        userName: string;
+        username: string;
         profile: any;
+        authenticated: any;
+        error: any;
+        token: any;
     }
 
     /**
