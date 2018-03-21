@@ -121,6 +121,7 @@ declare namespace adal {
         // Original ADAL Types
         instance: string;
         config: Config;
+        adalContext: adal.AuthenticationContext;
 
         /**
          * Gets initial Idtoken for the app backend
@@ -218,8 +219,9 @@ declare namespace adal {
          * Handles redirection after login operation. 
          * Gets access token from url and saves token to the (local/session) storage
          * or saves error in case unsuccessful login.
+         * @param {string} hash - Window hash if unable to use window.location.hash
          */
-        handleWindowCallback(): void;
+        handleWindowCallback(hash?: string): void;
 
         log(level: number, message: string, error: any): void;
         error(message: string, error: any): void;

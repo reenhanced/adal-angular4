@@ -46,6 +46,10 @@ export class AdalService {
         this.updateDataFromCache(<any>this.context.config.loginResource);
     }
 
+    public get adalContext(): adal.AuthenticationContext {
+        return this.context;
+    }
+
     public get config(): adal.Config {
         return this.context.config;
     }
@@ -66,8 +70,7 @@ export class AdalService {
         this.context.logOut();
     }
 
-    public handleWindowCallback(): void {
-        const hash = window.location.hash;
+    public handleWindowCallback(hash = window.location.hash): void {
         if (this.context.isCallback(hash)) {
             const requestInfo = this.context.getRequestInfo(hash);
             this.context.saveTokenFromHash(requestInfo);
@@ -75,7 +78,9 @@ export class AdalService {
                 this.updateDataFromCache(<any>this.context.config.loginResource);
 
             } else if (requestInfo.requestType === this.context.REQUEST_TYPE.RENEW_TOKEN) {
-                this.context.callback = window.parent.callBackMappedToRenewStates[requestInfo.stateResponse];
+                if (window.parent && window.parent.callBackMappedToRenewStates) {
+                    this.context.callback = window.parent.callBackMappedToRenewStates[requestInfo.stateResponse];
+                }
             }
 
             if (requestInfo.stateMatch) {
@@ -133,6 +138,27 @@ export class AdalService {
             });
             return s;
         }
+    }
+
+    /**
+     * @param {string} resource
+     * @param {string} extraQueryParams - Extra query params to pass to the oauth authorize url
+     * @param {string} claims - Claims to submit to the oauth authorize url
+     * @returns
+     */
+    public acquireTokenRedirect(resource: string, extraQueryParams: string = undefined, claims: string = undefined) {
+        return this.context.acquireTokenRedirect(resource, extraQueryParams, claims);
+    }
+
+    /**
+     * @param {string} resource
+     * @param {string} extraQueryParams - Extra query params to pass to the oauth authorize url
+     * @param {string} claims - Claims to submit to the oauth authorize url
+     * @param {function} callback - (err, id_token) Returns the id token or error
+     * @returns
+     */
+    public acquireTokenPopup(resource: string, extraQueryParams: string = undefined, claims: string = undefined, callback: any) {
+        return this.context.acquireTokenPopup(resource, extraQueryParams, claims, callback);
     }
 
     public getUser(): Observable<any> {
