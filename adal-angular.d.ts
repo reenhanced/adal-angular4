@@ -155,7 +155,7 @@ declare namespace adal {
          */
         getCachedUser(): User;
 
-        registerCallback(expectedState: string, resource: string, callback: (message: string, token: string) => any): void;
+        registerCallback(expectedState: string, resource: string, callback: tokenCallback): void;
 
 
         /**
@@ -179,7 +179,7 @@ declare namespace adal {
          * @param {string}   resource  ResourceUri identifying the target resource
          * @param {string}   extraQueryParameters  extraQueryParameters to add to the authentication request
          */
-        acquireTokenRedirect(resource: string, extraQueryParameters: string, claims: string)
+        acquireTokenRedirect(resource: string, extraQueryParameters?: string, claims?: string)
 
         /**
          * Redirect the Browser to Azure AD Authorization endpoint
