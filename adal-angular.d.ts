@@ -96,6 +96,14 @@ declare namespace adal {
     }
 
     /**
+     * @callback tokenCallback
+     * @param {string} error_description error description returned from AAD if token request fails.
+     * @param {string} token token returned from AAD if token request is successful.
+     * @param {string} error error message returned from AAD if token request fails.
+     */
+    interface tokenCallback { (message: string, token: string): any }
+
+    /**
      * 
      * 
      * @interface AuthenticationContext
@@ -149,12 +157,29 @@ declare namespace adal {
 
         registerCallback(expectedState: string, resource: string, callback: (message: string, token: string) => any): void;
 
+
         /**
          * Acquire token from cache if not expired and available. Acquires token from iframe if expired.
          * @param {string}   resource  ResourceUri identifying the target resource
-         * @param {requestCallback} callback
+         * @param {tokenCallback} callback
          */
-        acquireToken(resource: string, callback: (message: string, token: string) => any): void;
+        acquireToken(resource: string, callback: tokenCallback): void;
+
+        /**
+         * Acquires token (interactive flow using a popUp window) by sending request to AAD to obtain a new token.
+         * @param {string}   resource  ResourceUri identifying the target resource
+         * @param {string}   extraQueryParameters  extraQueryParameters to add to the authentication request
+         * @param {tokenCallback} callback -  The callback provided by the caller. It will be called with token or error.
+         */
+        acquireTokenPopup(resource: string, extraQueryParameters: string, claims: string, callback: tokenCallback)
+
+        /**
+         * Acquires token (interactive flow using a redirect) by sending request to AAD to obtain a new token. In this case the callback passed in the Authentication
+         * request constructor will be called.
+         * @param {string}   resource  ResourceUri identifying the target resource
+         * @param {string}   extraQueryParameters  extraQueryParameters to add to the authentication request
+         */
+        acquireTokenRedirect(resource: string, extraQueryParameters: string, claims: string)
 
         /**
          * Redirect the Browser to Azure AD Authorization endpoint

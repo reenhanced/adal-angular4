@@ -48,7 +48,7 @@
     "zone.js": "^0.8.20"
   },
   "dependencies": {
-    "adal-angular": "=1.0.15",
+    "adal-angular": "github:reenhanced/azure-activedirectory-library-for-js#dev",
     "npm": "^5.7.1"
   }
 }
